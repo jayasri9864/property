@@ -76,7 +76,7 @@ class UserRegister(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)   # ✅ add this properly
-    phone = models.CharField(max_length=15, blank=True, null=True)
+    role = models.CharField(max_length=50, default='user')  # ✅ இதை add பண்ணு
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
