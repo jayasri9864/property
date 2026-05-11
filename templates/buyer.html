@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PropMart — For Sale</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pink:#F43397;--pink-l:#fff0f7;--green:#00A86B;--bg:#F5F5F5;--dark:#212121;--mid:#666;--border:#E8E8E8}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;padding-bottom:100px}
+/* TOPBAR */
+.topbar{background:var(--pink);padding:12px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(244,51,151,.3)}
+.back{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:900;color:#fff;flex:1}
+/* PHOTO */
+.photo-box{width:100%;aspect-ratio:4/3;background:#e8e8e8;position:relative;overflow:hidden}
+.photo-box img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:72px;background:linear-gradient(135deg,#f8f8f8,#e0e0e0)}
+.for-sale-tag{position:absolute;top:12px;left:12px;background:var(--pink);color:#fff;font-size:10px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:5px}
+.price-chip{position:absolute;bottom:14px;right:14px;background:rgba(26,23,20,.85);backdrop-filter:blur(8px);border-radius:10px;padding:10px 16px;color:#fff}
+.price-chip .pl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;opacity:.65;margin-bottom:2px}
+.price-chip .pv{font-size:22px;font-weight:900;color:#FFA0CC;letter-spacing:-.5px}
+/* CARD */
+.card{background:#fff;margin:10px 10px 0;border-radius:14px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.card-body{padding:16px}
+.hname{font-size:22px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px}
+.owner-row{display:flex;align-items:center;gap:8px;color:var(--mid);font-size:13px;margin-bottom:14px}
+.oav{width:28px;height:28px;border-radius:50%;background:var(--pink-l);border:1.5px solid #ffc8e6;display:flex;align-items:center;justify-content:center;font-size:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{display:flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:7px 11px;font-size:12px;font-weight:700}
+.sec-lbl{font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--pink);margin-bottom:8px}
+.desc{font-size:14px;line-height:1.7;color:#444}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.drow:last-child{border-bottom:none}
+.dk{font-size:12px;color:var(--mid);font-weight:700}
+.dv{font-size:13px;font-weight:800;color:var(--dark);text-align:right;max-width:200px}
+/* BOTTOM CTA */
+.bottom-cta{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:10px;z-index:100}
+.cta-btn{flex:1;padding:14px;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;transition:transform .15s}
+.cta-btn:active{transform:scale(.97)}
+.cta-call{background:#fff;color:var(--dark);border:2px solid var(--border)}
+.cta-main{background:var(--pink);color:#fff}
+/* NO DATA */
+.nodata{text-align:center;padding:80px 20px;display:none}
+.nodata h2{font-size:20px;font-weight:900;margin-bottom:8px;color:var(--mid)}
+.nodata p{font-size:14px;color:var(--mid);margin-bottom:20px}
+.nd-a{display:inline-block;padding:12px 24px;background:var(--pink);color:#fff;font-weight:900;border-radius:10px;text-decoration:none;font-size:14px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back" onclick="history.length>1?history.back():location.href='sell.html'">←</button>
+  <div class="topbar-title">Property Details</div>
+</div>
+
+<div id="nodata" class="nodata">
+  <h2>No listing found</h2>
+  <p>Go back and submit a buyer listing.</p>
+  <a href="sell.html" class="nd-a">Go to PropMart</a>
+</div>
+
+<div id="content" style="display:none">
+  <div class="photo-box">
+    <div class="photo-ph" id="ph">🏠</div>
+    <img id="img" src="" alt="" style="display:none"/>
+    <div class="for-sale-tag">🏡 For Sale</div>
+    <div class="price-chip"><div class="pl">Sale Price</div><div class="pv" id="dPrice">₹0</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="hname" id="dName">—</div>
+      <div class="owner-row"><div class="oav">👤</div>Listed by <strong id="dOwner">—</strong></div>
+      <div class="chips">
+        <div class="chip">📐 <span id="dSqft">—</span> sq.ft</div>
+        <div class="chip">📍 <span id="dLoc">—</span></div>
+      </div>
+      <div class="sec-lbl">About this Property</div>
+      <div class="desc" id="dDesc">—</div>
+      <div class="divider"></div>
+      <div class="sec-lbl">Details</div>
+      <div class="drow"><div class="dk">House Name</div><div class="dv" id="d2Name">—</div></div>
+      <div class="drow"><div class="dk">Owner</div><div class="dv" id="d2Owner">—</div></div>
+      <div class="drow"><div class="dk">Size</div><div class="dv" id="d2Sqft">—</div></div>
+      <div class="drow"><div class="dk">Price</div><div class="dv" id="d2Price">—</div></div>
+      <div class="drow"><div class="dk">Address</div><div class="dv" id="d2Addr">—</div></div>
+      <div class="drow"><div class="dk">Location</div><div class="dv" id="d2Loc">—</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-cta" id="cta" style="display:none">
+  <button class="cta-btn cta-call" onclick="location.href='sell.html'">← Back</button>
+  <button class="cta-btn cta-main">Contact Owner</button>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded',()=>{
+  // get id from URL or fallback to latest
+  const params=new URLSearchParams(location.search);
+  const idx=params.get('id');
+  let d=null;
+  const list=JSON.parse(localStorage.getItem('buyerListings')||'[]');
+  if(idx!==null&&list[idx])d=list[idx];
+  else if(list.length)d=list[0];
+  else{const s=localStorage.getItem('buyerListing');if(s)d=JSON.parse(s);}
+
+  if(!d){document.getElementById('nodata').style.display='block';return;}
+  document.getElementById('content').style.display='block';
+  document.getElementById('cta').style.display='flex';
+
+  const fmt=n=>'₹'+Number(n).toLocaleString('en-IN');
+  document.getElementById('dName').textContent=d.houseName;
+  document.getElementById('dOwner').textContent=d.ownerName;
+  document.getElementById('dSqft').textContent=Number(d.sqft).toLocaleString('en-IN');
+  document.getElementById('dLoc').textContent=d.location;
+  document.getElementById('dDesc').textContent=d.description;
+  document.getElementById('dPrice').textContent=fmt(d.price);
+  document.getElementById('d2Name').textContent=d.houseName;
+  document.getElementById('d2Owner').textContent=d.ownerName;
+  document.getElementById('d2Sqft').textContent=Number(d.sqft).toLocaleString('en-IN')+' sq.ft';
+  document.getElementById('d2Price').textContent=fmt(d.price);
+  document.getElementById('d2Addr').textContent=d.address;
+  document.getElementById('d2Loc').textContent=d.location;
+
+  if(d.photo){
+    document.getElementById('ph').style.display='none';
+    const img=document.getElementById('img');img.src=d.photo;img.style.display='block';
+  }
+});
+</script>
+</body>
+</html>

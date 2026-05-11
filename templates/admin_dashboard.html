@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — PropAdmin</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --cream:      #faf8f4;
+      --soft:       #f3efe6;
+      --border:     #e8e2d6;
+      --accent:     #7c6f5a;
+      --active-bg:  #ede8dc;
+      --active-txt: #3d3427;
+      --text:       #4a4235;
+      --muted:      #9e9485;
+      --white:      #ffffff;
+      --green:      #4caf82;
+      --blue:       #5b9bd5;
+      --amber:      #e8a245;
+      --red:        #d96b6b;
+      --orange:     #f97316;
+      --sidebar-w:  240px;
+    }
+    html, body { height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--cream); color: var(--text); }
+    .shell { display: flex; height: 100vh; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--white);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;
+    }
+    .sidebar-logo {
+      padding: 20px 16px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      position: sticky; top: 0; background: var(--white); z-index: 1;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: linear-gradient(135deg, #c8b99a, #a08c72);
+      display: flex; align-items: center; justify-content: center; font-size: 17px;
+    }
+    .logo-text { font-size: 14px; font-weight: 700; color: var(--active-txt); }
+    .logo-sub  { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .nav-section { padding: 12px 0 4px; }
+    .nav-label {
+      font-size: 9px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.09em; padding: 0 18px 7px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 14px; margin: 1px 8px; border-radius: 8px;
+      cursor: pointer; font-size: 13px; color: var(--text);
+      transition: background 0.15s; border: none; background: none;
+      width: calc(100% - 16px); text-align: left; text-decoration: none;
+    }
+    .nav-item:hover { background: var(--soft); }
+    .nav-item.active { background: var(--active-bg); color: var(--active-txt); font-weight: 600; }
+    .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto; font-size: 9px; font-weight: 700;
+      background: var(--amber); color: #fff; border-radius: 10px; padding: 2px 7px;
+    }
+
+    /* MAIN */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar {
+      padding: 14px 24px; background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .topbar-title { font-size: 16px; font-weight: 700; color: var(--active-txt); }
+    .topbar-date  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%; background: var(--active-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--accent); border: 1.5px solid var(--border);
+    }
+    .content { padding: 20px 24px; overflow-y: auto; flex: 1; }
+
+    /* PAGES */
+    .page { display: none; animation: fadeIn 0.2s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    /* STAT CARDS */
+    .stat-grid { display: grid; gap: 12px; margin-bottom: 18px; }
+    .g-4 { grid-template-columns: repeat(4, 1fr); }
+    .g-3 { grid-template-columns: repeat(3, 1fr); }
+    .g-2 { grid-template-columns: repeat(2, 1fr); }
+    .stat-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .stat-icon { font-size: 20px; margin-bottom: 8px; }
+    .stat-val  { font-size: 26px; font-weight: 700; color: var(--active-txt); line-height: 1; }
+    .stat-lbl  { font-size: 10px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .big-num   { display: flex; align-items: baseline; gap: 7px; }
+    .big-num .num  { font-size: 36px; font-weight: 700; color: var(--active-txt); }
+    .big-num .unit { font-size: 11px; color: var(--muted); }
+
+    /* TABLE */
+    .table-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden; margin-bottom: 18px;
+    }
+    .table-head {
+      padding: 13px 18px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .table-title { font-size: 13px; font-weight: 700; color: var(--active-txt); }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--muted); padding: 9px 18px; text-align: left;
+      border-bottom: 1px solid var(--border); background: var(--cream); font-weight: 700;
+    }
+    td { font-size: 13px; color: var(--text); padding: 10px 18px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--cream); }
+
+    /* PILLS */
+    .pill { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+    .pill-green  { background: #e8f6ef; color: #2e8058; }
+    .pill-blue   { background: #e8f0fc; color: #2a5fa5; }
+    .pill-amber  { background: #fdf3e3; color: #9a6010; }
+    .pill-red    { background: #fdeaea; color: #a03030; }
+    .pill-orange { background: #fff3e8; color: #c25a00; }
+
+    /* EMPTY */
+    .empty-state { text-align: center; padding: 36px 0; color: var(--muted); font-size: 13px; }
+    .empty-icon  { font-size: 32px; margin-bottom: 10px; }
+    .section-title { font-size: 13px; font-weight: 700; color: var(--active-txt); margin-bottom: 12px; }
+
+    /* PROPERTY GRID */
+    .prop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .prop-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: box-shadow 0.2s;
+    }
+    .prop-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+    .prop-img {
+      width: 100%; height: 170px; object-fit: cover;
+    }
+    .prop-no-img {
+      width: 100%; height: 170px; background: #f0ece4;
+      display: flex; align-items: center; justify-content: center; font-size: 48px;
+    }
+    .prop-body { padding: 14px; }
+    .prop-badge {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; color: #fff;
+    }
+    .badge-sale   { background: #2563eb; }
+    .badge-rent   { background: var(--orange); }
+    .prop-name    { font-size: 15px; font-weight: 700; color: var(--active-txt); margin-bottom: 3px; }
+    .prop-loc     { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .prop-price   { font-size: 18px; font-weight: 900; margin-bottom: 8px; }
+    .price-sale   { color: #2563eb; }
+    .price-rent   { color: var(--orange); }
+    .prop-info    { font-size: 12px; color: var(--text); margin-bottom: 3px; }
+    .prop-date    { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .view-detail-btn {
+      display: block; text-align: center; margin-top: 12px;
+      padding: 9px; border-radius: 10px; font-size: 12px; font-weight: 700;
+      text-decoration: none; cursor: pointer; border: none; width: 100%;
+      font-family: inherit;
+    }
+    .btn-sale { background: #2563eb; color: #fff; }
+    .btn-sale:hover { background: #1d4ed8; }
+    .btn-rent { background: var(--orange); color: #fff; }
+    .btn-rent:hover { background: #ea6c00; }
+
+    /* DETAIL PANEL */
+    .detail-panel {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; max-width: 640px; margin: 0 auto;
+    }
+    .detail-img { width: 100%; height: 260px; object-fit: cover; }
+    .detail-no-img {
+      width: 100%; height: 260px; background: #f0ece4;
+      display: flex; align-items: center; justify-content: center; font-size: 80px;
+    }
+    .detail-body { padding: 20px; }
+    .detail-title { font-size: 22px; font-weight: 900; color: var(--active-txt); margin-bottom: 4px; }
+    .detail-price { font-size: 26px; font-weight: 900; margin: 10px 0; }
+    .det-row {
+      display: flex; justify-content: space-between; padding: 10px 0;
+      border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .det-row:last-child { border-bottom: none; }
+    .det-lbl { color: var(--muted); font-weight: 600; }
+    .det-val { font-weight: 700; color: var(--active-txt); }
+    .desc-box {
+      background: var(--cream); border-radius: 10px; padding: 14px;
+      font-size: 13px; color: var(--text); margin-top: 14px; line-height: 1.7;
+    }
+    .rules-box {
+      background: #fff7ed; border-radius: 10px; padding: 14px; margin-top: 14px;
+    }
+    .rules-box h4 { color: var(--orange); margin-bottom: 10px; font-size: 13px; font-weight: 700; }
+    .rule-item { font-size: 13px; color: var(--text); margin-bottom: 5px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-bottom: 16px; font-size: 13px; font-weight: 700;
+      cursor: pointer; border: none; background: none;
+      color: var(--accent); padding: 0;
+    }
+    .back-link:hover { color: var(--active-txt); }
+
+    @media (max-width: 900px) {
+      .g-4 { grid-template-columns: repeat(2, 1fr); }
+      .g-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .sidebar { display: none; }
+      .g-2, .g-3, .g-4 { grid-template-columns: 1fr; }
+      .prop-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🏠</div>
+      <div>
+        <div class="logo-text">PropAdmin</div>
+        <div class="logo-sub">Property Manager</div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <button class="nav-item active" onclick="navTo(this,'page-dashboard','Dashboard Overview')">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Today's Activity</div>
+      <button class="nav-item" onclick="navTo(this,'page-buyer-posts','Buyer Posts')">
+        <span class="nav-icon">🏡</span> Buyer Posts
+        <span class="nav-badge">{{ buyer_listings_count }}</span>
+      </button>
+      <button class="nav-item" onclick="navTo(this,'page-tenant-posts','Tenant Posts')">
+        <span class="nav-icon">🔑</span> Tenant Posts
+        <span class="nav-badge">{{ tenant_listings_count }}</span>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Transactions</div>
+      <button class="nav-item" onclick="navTo(this,'page-recent','Recent Transactions')">
+        <span class="nav-icon">🤝</span> All Transactions
+      </button>
+      <button class="nav-item" onclick="navTo(this,'page-sold','Properties Sold')">
+        <span class="nav-icon">🏘️</span> Properties Sold
+      </button>
+      <button class="nav-item" onclick="navTo(this,'page-rentedprop','Properties Rented')">
+        <span class="nav-icon">🏡</span> Properties Rented
+      </button>
+    </div>
+
+    <div style="margin-top:auto; padding:16px 8px 20px;">
+      <a href="{% url 'property:logout' %}" class="nav-item" style="color:var(--red);">
+        <span class="nav-icon">🚪</span> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="page-title">Dashboard Overview</div>
+        <div class="topbar-date">📅 Today — {{ today }}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:12px;color:var(--muted);">Admin</span>
+        <div class="avatar">A</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── PAGE: DASHBOARD ── -->
+      <div class="page active" id="page-dashboard">
+        <div class="stat-grid g-2" style="margin-bottom:16px;">
+          <div class="stat-card">
+            <div class="stat-icon">🛒</div>
+            <div class="big-num">
+              <span class="num">{{ today_bought_count }}</span>
+              <span class="unit">transactions today</span>
+            </div>
+            <div class="stat-lbl" style="margin-top:6px;">Houses Bought Today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏠</div>
+            <div class="big-num">
+              <span class="num" style="color:var(--blue)">{{ today_rented_count }}</span>
+              <span class="unit">rentals today</span>
+            </div>
+            <div class="stat-lbl" style="margin-top:6px;">Houses Rented Today</div>
+          </div>
+        </div>
+
+        <div class="stat-grid g-4">
+          <div class="stat-card">
+            <div class="stat-icon">🏘️</div>
+            <div class="stat-val">{{ total_properties }}</div>
+            <div class="stat-lbl">Total Properties</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-val" style="color:var(--green)">{{ total_available }}</div>
+            <div class="stat-lbl">Available Now</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🤝</div>
+            <div class="stat-val" style="color:var(--amber)">{{ total_sold }}</div>
+            <div class="stat-lbl">Properties Sold</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏡</div>
+            <div class="stat-val" style="color:var(--blue)">{{ total_rented }}</div>
+            <div class="stat-lbl">Properties Rented</div>
+          </div>
+        </div>
+
+        <div class="stat-grid g-2">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-val">{{ total_users }}</div>
+            <div class="stat-lbl">Registered Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-val" style="color:var(--blue)">{{ today_bought_count|add:today_rented_count }}</div>
+            <div class="stat-lbl">Today's Total Deals</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           PAGE: BUYER POSTS (List + Detail)
+      ══════════════════════════════════════ -->
+      <div class="page" id="page-buyer-posts">
+
+        <!-- LIST VIEW -->
+        <div id="buyer-list-view">
+          <div class="section-title">🏡 Buyer Posts — {{ buyer_listings_count }} listings</div>
+
+          {% if buyer_listings %}
+          <div class="prop-grid">
+            {% for listing in buyer_listings %}
+            <div class="prop-card">
+              {% if listing.house_photo %}
+                <img class="prop-img" src="{{ listing.house_photo.url }}" alt="{{ listing.house_name }}"/>
+              {% else %}
+                <div class="prop-no-img">🏠</div>
+              {% endif %}
+              <div class="prop-body">
+                <span class="prop-badge badge-sale">For Sale</span>
+                <div class="prop-name">{{ listing.house_name }}</div>
+                <div class="prop-loc">📍 {{ listing.location }}</div>
+                <div class="prop-price price-sale">₹{{ listing.price|floatformat:0 }}</div>
+                <div class="prop-info">👤 {{ listing.owner_name }}</div>
+                <div class="prop-info">📐 {{ listing.sqft }} sq.ft</div>
+                <div class="prop-date">🗓️ {{ listing.created_at|date:"d M Y" }}</div>
+                <button class="view-detail-btn btn-sale"
+                  data-name="{{ listing.house_name|escapejs }}"
+                  data-loc="{{ listing.location|escapejs }}"
+                  data-addr="{{ listing.address|escapejs }}"
+                  data-owner="{{ listing.owner_name|escapejs }}"
+                  data-sqft="{{ listing.sqft }}"
+                  data-price="{{ listing.price }}"
+                  data-desc="{{ listing.description|escapejs }}"
+                  data-date="{{ listing.created_at|date:'d M Y, h:i A' }}"
+                  data-img="{{ listing.house_photo.url|default:'' }}"
+                  onclick="showBuyerDetailFromBtn(this)">
+                  👁️ View Full Details
+                </button>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-icon">🏠</div>
+            இன்னும் buyer posts இல்லை
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- DETAIL VIEW (hidden by default) -->
+        <div id="buyer-detail-view" style="display:none;">
+          <button class="back-link" onclick="hideBuyerDetail()">← Back to Buyer Posts</button>
+          <div class="detail-panel">
+            <div id="buyer-det-img-wrap"></div>
+            <div class="detail-body">
+              <span class="prop-badge badge-sale">For Sale</span>
+              <div class="detail-title" id="buyer-det-name"></div>
+              <div class="detail-price price-sale" id="buyer-det-price"></div>
+              <div class="det-row"><span class="det-lbl">👤 Owner</span><span class="det-val" id="buyer-det-owner"></span></div>
+              <div class="det-row"><span class="det-lbl">📍 Location</span><span class="det-val" id="buyer-det-loc"></span></div>
+              <div class="det-row"><span class="det-lbl">🏠 Address</span><span class="det-val" id="buyer-det-addr"></span></div>
+              <div class="det-row"><span class="det-lbl">📐 Area</span><span class="det-val" id="buyer-det-sqft"></span></div>
+              <div class="det-row"><span class="det-lbl">🗓️ Listed On</span><span class="det-val" id="buyer-det-date"></span></div>
+              <div class="desc-box" id="buyer-det-desc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           PAGE: TENANT POSTS (List + Detail)
+      ══════════════════════════════════════ -->
+      <div class="page" id="page-tenant-posts">
+
+        <!-- LIST VIEW -->
+        <div id="tenant-list-view">
+          <div class="section-title">🔑 Tenant Posts — {{ tenant_listings_count }} listings</div>
+
+          {% if tenant_listings %}
+          <div class="prop-grid">
+            {% for listing in tenant_listings %}
+            <div class="prop-card">
+              {% if listing.house_photo %}
+                <img class="prop-img" src="{{ listing.house_photo.url }}" alt="{{ listing.house_name }}"/>
+              {% else %}
+                <div class="prop-no-img">🏠</div>
+              {% endif %}
+              <div class="prop-body">
+                <span class="prop-badge badge-rent">For Rent</span>
+                <div class="prop-name">{{ listing.house_name }}</div>
+                <div class="prop-loc">📍 {{ listing.location }}</div>
+                <div class="prop-price price-rent">₹{{ listing.rent_amount|floatformat:0 }}/mo</div>
+                <div class="prop-info">👤 {{ listing.owner_name }}</div>
+                <div class="prop-info">📐 {{ listing.sqft }} sq.ft</div>
+                <div class="prop-date">🗓️ {{ listing.created_at|date:"d M Y" }}</div>
+                <button class="view-detail-btn btn-rent"
+                  onclick="showTenantDetail(
+                    '{{ listing.house_name|escapejs }}',
+                    '{{ listing.location|escapejs }}',
+                    '{{ listing.address|escapejs }}',
+                    '{{ listing.owner_name|escapejs }}',
+                    '{{ listing.sqft }}',
+                    '{{ listing.rent_amount }}',
+                    '{{ listing.description|escapejs }}',
+                    '{{ listing.tenant_rules|escapejs }}',
+                    '{{ listing.created_at|date:"d M Y, h:i A" }}',
+                    '{% if listing.house_photo %}{{ listing.house_photo.url }}{% endif %}'
+                  )">
+                  👁️ View Full Details
+                </button>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-icon">🔑</div>
+            இன்னும் tenant posts இல்லை
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- DETAIL VIEW (hidden by default) -->
+        <div id="tenant-detail-view" style="display:none;">
+          <button class="back-link" onclick="hideTenantDetail()">← Back to Tenant Posts</button>
+          <div class="detail-panel">
+            <div id="tenant-det-img-wrap"></div>
+            <div class="detail-body">
+              <span class="prop-badge badge-rent">For Rent</span>
+              <div class="detail-title" id="tenant-det-name"></div>
+              <div class="detail-price price-rent" id="tenant-det-price"></div>
+              <div class="det-row"><span class="det-lbl">👤 Owner</span><span class="det-val" id="tenant-det-owner"></span></div>
+              <div class="det-row"><span class="det-lbl">📍 Location</span><span class="det-val" id="tenant-det-loc"></span></div>
+              <div class="det-row"><span class="det-lbl">🏠 Address</span><span class="det-val" id="tenant-det-addr"></span></div>
+              <div class="det-row"><span class="det-lbl">📐 Area</span><span class="det-val" id="tenant-det-sqft"></span></div>
+              <div class="det-row"><span class="det-lbl">🗓️ Listed On</span><span class="det-val" id="tenant-det-date"></span></div>
+              <div class="desc-box" id="tenant-det-desc"></div>
+              <div class="rules-box" id="tenant-det-rules-box" style="display:none;">
+                <h4>📋 Tenant Rules</h4>
+                <div id="tenant-det-rules"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: BOUGHT TODAY ── -->
+      <div class="page" id="page-bought">
+        <div class="section-title">Houses Bought Today</div>
+        <div class="table-card">
+          <div class="table-head">
+            <div class="table-title">Buy Transactions — {{ today }}</div>
+          </div>
+          <table>
+            <thead>
+              <tr><th>#</th><th>Buyer</th><th>Property</th><th>Amount</th><th>Date & Time</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              {% for t in today_bought %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ t.user }}</td>
+                <td>{{ t.property }}</td>
+                <td>₹{{ t.amount }}</td>
+                <td>{{ t.transaction_date|date:"d M Y, H:i" }}</td>
+                <td>
+                  {% if t.status == 'completed' %}<span class="pill pill-green">Completed</span>
+                  {% elif t.status == 'pending' %}<span class="pill pill-amber">Pending</span>
+                  {% else %}<span class="pill pill-blue">{{ t.status|capfirst }}</span>{% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6">
+                <div class="empty-state"><div class="empty-icon">📭</div>Today இன்னும் buy transactions இல்லை</div>
+              </td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAGE: RECENT TRANSACTIONS ── -->
+      <div class="page" id="page-recent">
+        <div class="section-title">Recent Transactions (Last 10)</div>
+        <div class="table-card">
+          <div class="table-head">
+            <div class="table-title">All Recent Transactions</div>
+          </div>
+          <table>
+            <thead>
+              <tr><th>#</th><th>User</th><th>Property</th><th>Type</th><th>Amount</th><th>Date</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              {% for t in recent_transactions %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ t.user }}</td>
+                <td>{{ t.property }}</td>
+                <td>
+                  {% if t.transaction_type == 'buy' %}<span class="pill pill-amber">Buy</span>
+                  {% else %}<span class="pill pill-blue">Rent</span>{% endif %}
+                </td>
+                <td>₹{{ t.amount }}</td>
+                <td>{{ t.transaction_date|date:"d M Y" }}</td>
+                <td>
+                  {% if t.status == 'completed' %}<span class="pill pill-green">Completed</span>
+                  {% elif t.status == 'pending' %}<span class="pill pill-amber">Pending</span>
+                  {% else %}<span class="pill pill-blue">{{ t.status|capfirst }}</span>{% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="7">
+                <div class="empty-state"><div class="empty-icon">📭</div>இன்னும் transactions இல்லை</div>
+              </td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAGE: PROPERTIES SOLD ── -->
+      <div class="page" id="page-sold">
+        <div class="section-title">Properties Sold</div>
+        <div class="table-card">
+          <div class="table-head">
+            <div class="table-title">Sold — Total Count: {{ total_sold }}</div>
+          </div>
+          <table>
+            <thead>
+              <tr><th>#</th><th>Buyer</th><th>Property</th><th>Amount</th><th>Date</th></tr>
+            </thead>
+            <tbody>
+              {% for t in recent_transactions %}{% if t.transaction_type == 'buy' %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ t.user }}</td>
+                <td>{{ t.property }}</td>
+                <td>₹{{ t.amount }}</td>
+                <td>{{ t.transaction_date|date:"d M Y" }}</td>
+              </tr>
+              {% endif %}{% empty %}
+              <tr><td colspan="5">
+                <div class="empty-state"><div class="empty-icon">🏘️</div>இன்னும் sold properties இல்லை</div>
+              </td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAGE: PROPERTIES RENTED ── -->
+      <div class="page" id="page-rentedprop">
+        <div class="section-title">Properties Rented</div>
+        <div class="table-card">
+          <div class="table-head">
+            <div class="table-title">Rented — Total Count: {{ total_rented }}</div>
+          </div>
+          <table>
+            <thead>
+              <tr><th>#</th><th>Tenant</th><th>Property</th><th>Amount</th><th>Date</th></tr>
+            </thead>
+            <tbody>
+              {% for t in recent_transactions %}{% if t.transaction_type == 'rent' %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ t.user }}</td>
+                <td>{{ t.property }}</td>
+                <td>₹{{ t.amount }}</td>
+                <td>{{ t.transaction_date|date:"d M Y" }}</td>
+              </tr>
+              {% endif %}{% empty %}
+              <tr><td colspan="5">
+                <div class="empty-state"><div class="empty-icon">🏡</div>இன்னும் rented properties இல்லை</div>
+              </td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+  /* ── Navigation ── */
+  function navTo(btn, pageId, title) {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    document.getElementById('page-title').textContent = title;
+  }
+
+  /* ── Buyer Detail ── */
+  function showBuyerDetailFromBtn(btn) {
+    var name   = btn.dataset.name;
+    var loc    = btn.dataset.loc;
+    var addr   = btn.dataset.addr;
+    var owner  = btn.dataset.owner;
+    var sqft   = btn.dataset.sqft;
+    var price  = btn.dataset.price;
+    var desc   = btn.dataset.desc;
+    var date   = btn.dataset.date;
+    var imgUrl = btn.dataset.img;
+    showBuyerDetail(name, loc, addr, owner, sqft, price, desc, date, imgUrl);
+  }
+
+  function showBuyerDetail(name, loc, addr, owner, sqft, price, desc, date, imgUrl) {
+    document.getElementById('buyer-list-view').style.display = 'none';
+    document.getElementById('buyer-detail-view').style.display = 'block';
+
+    // Image
+    var imgWrap = document.getElementById('buyer-det-img-wrap');
+    if (imgUrl) {
+      imgWrap.innerHTML = '<img class="detail-img" src="' + imgUrl + '" alt="' + name + '"/>';
+    } else {
+      imgWrap.innerHTML = '<div class="detail-no-img">🏠</div>';
+    }
+
+    document.getElementById('buyer-det-name').textContent  = name;
+    document.getElementById('buyer-det-price').textContent = '₹' + Number(price).toLocaleString('en-IN');
+    document.getElementById('buyer-det-owner').textContent = owner;
+    document.getElementById('buyer-det-loc').textContent   = loc;
+    document.getElementById('buyer-det-addr').textContent  = addr || '—';
+    document.getElementById('buyer-det-sqft').textContent  = sqft + ' sq.ft';
+    document.getElementById('buyer-det-date').textContent  = date;
+    document.getElementById('buyer-det-desc').innerHTML    = '<strong>📝 Description:</strong><br/>' + (desc || '—');
+
+    // Scroll top
+    document.querySelector('.content').scrollTop = 0;
+  }
+
+  function hideBuyerDetail() {
+    document.getElementById('buyer-detail-view').style.display = 'none';
+    document.getElementById('buyer-list-view').style.display   = 'block';
+    document.querySelector('.content').scrollTop = 0;
+  }
+
+  /* ── Tenant Detail ── */
+  function showTenantDetailFromBtn(btn) {
+    var name   = btn.dataset.name;
+    var loc    = btn.dataset.loc;
+    var addr   = btn.dataset.addr;
+    var owner  = btn.dataset.owner;
+    var sqft   = btn.dataset.sqft;
+    var rent   = btn.dataset.rent;
+    var desc   = btn.dataset.desc;
+    var rules  = btn.dataset.rules;
+    var date   = btn.dataset.date;
+    var imgUrl = btn.dataset.img;
+    showTenantDetail(name, loc, addr, owner, sqft, rent, desc, rules, date, imgUrl);
+  }
+
+  function showTenantDetail(name, loc, addr, owner, sqft, rent, desc, rules, date, imgUrl) {
+    document.getElementById('tenant-list-view').style.display = 'none';
+    document.getElementById('tenant-detail-view').style.display = 'block';
+
+    // Image
+    var imgWrap = document.getElementById('tenant-det-img-wrap');
+    if (imgUrl) {
+      imgWrap.innerHTML = '<img class="detail-img" src="' + imgUrl + '" alt="' + name + '"/>';
+    } else {
+      imgWrap.innerHTML = '<div class="detail-no-img">🏠</div>';
+    }
+
+    document.getElementById('tenant-det-name').textContent  = name;
+    document.getElementById('tenant-det-price').textContent = '₹' + Number(rent).toLocaleString('en-IN') + '/mo';
+    document.getElementById('tenant-det-owner').textContent = owner;
+    document.getElementById('tenant-det-loc').textContent   = loc;
+    document.getElementById('tenant-det-addr').textContent  = addr || '—';
+    document.getElementById('tenant-det-sqft').textContent  = sqft + ' sq.ft';
+    document.getElementById('tenant-det-date').textContent  = date;
+    document.getElementById('tenant-det-desc').innerHTML    = '<strong>📝 Description:</strong><br/>' + (desc || '—');
+
+    // Rules
+    var rulesBox = document.getElementById('tenant-det-rules-box');
+    var rulesDiv = document.getElementById('tenant-det-rules');
+    if (rules && rules.trim()) {
+      var ruleList = rules.split(',').map(r => r.trim()).filter(r => r);
+      rulesDiv.innerHTML = ruleList.map(r => '<div class="rule-item">✅ ' + r + '</div>').join('');
+      rulesBox.style.display = 'block';
+    } else {
+      rulesBox.style.display = 'none';
+    }
+
+    document.querySelector('.content').scrollTop = 0;
+  }
+
+  function hideTenantDetail() {
+    document.getElementById('tenant-detail-view').style.display = 'none';
+    document.getElementById('tenant-list-view').style.display   = 'block';
+    document.querySelector('.content').scrollTop = 0;
+  }
+</script>
+</body>
+</html>

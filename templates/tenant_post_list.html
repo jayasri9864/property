@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Tenant Posts</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6fb; padding: 20px; }
+        .back-btn { 
+            display: inline-block; margin-bottom: 20px; padding: 8px 16px;
+            background: #f97316; color: #fff; border-radius: 8px; 
+            text-decoration: none; font-weight: bold;
+        }
+        h2 { color: #f97316; margin-bottom: 16px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .card { 
+            background: #fff; border-radius: 14px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-no-img {
+            width: 100%; height: 180px; background: #fff7ed;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 48px;
+        }
+        .card-body { padding: 14px; }
+        .card-title { font-size: 16px; font-weight: bold; color: #111827; }
+        .card-loc { font-size: 12px; color: #6b7280; margin: 4px 0; }
+        .card-price { font-size: 18px; font-weight: 900; color: #f97316; margin: 8px 0; }
+        .card-info { font-size: 12px; color: #374151; margin-bottom: 4px; }
+        .view-btn {
+            display: block; text-align: center; margin-top: 12px;
+            padding: 10px; background: #f97316; color: #fff;
+            border-radius: 10px; text-decoration: none; font-weight: bold;
+            font-size: 13px;
+        }
+        .view-btn:hover { background: #ea6c00; }
+        .empty { text-align: center; padding: 40px; color: #6b7280; font-size: 14px; }
+        .badge { 
+            display: inline-block; padding: 3px 10px; background: #f97316; 
+            color: #fff; border-radius: 20px; font-size: 11px; margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'property:admin_dashboard' %}" class="back-btn">← Back to Dashboard</a>
+    <h2>🔑 Tenant Posts ({{ listings.count }})</h2>
+
+    {% if listings %}
+    <div class="grid">
+        {% for listing in listings %}
+        <div class="card">
+            {% if listing.house_photo %}
+                <img src="{{ listing.house_photo.url }}" alt="{{ listing.house_name }}"/>
+            {% else %}
+                <div class="card-no-img">🏠</div>
+            {% endif %}
+            <div class="card-body">
+                <span class="badge">For Rent</span>
+                <div class="card-title">{{ listing.house_name }}</div>
+                <div class="card-loc">📍 {{ listing.location }}</div>
+                <div class="card-price">₹{{ listing.rent_amount|floatformat:0 }}/mo</div>
+                <div class="card-info">👤 {{ listing.owner_name }}</div>
+                <div class="card-info">📐 {{ listing.sqft }} sq.ft</div>
+                <div class="card-info">🗓️ {{ listing.created_at|date:"d M Y" }}</div>
+                <a href="{% url 'property:tenant_detail' listing.pk %}" class="view-btn">
+                    👁️ View Full Details
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">No tenant posts yet.</div>
+    {% endif %}
+</body>
+</html>

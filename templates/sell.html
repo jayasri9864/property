@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PropMart</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#2563eb;--primary2:#1d4ed8;--accent:#2563eb;
+  --bg:#f4f6fb;--card:#ffffff;--text:#111827;--muted:#6b7280;
+  --border:#e5e7eb;--green:#16a34a;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;}
+.topbar{background:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;box-shadow:0 4px 18px rgba(0,0,0,.08);}
+.logo-t{font-size:20px;font-weight:900;color:var(--primary);}
+.search-b{flex:1;display:flex;align-items:center;background:#f3f4f6;border-radius:12px;padding:8px 12px;gap:8px;border:1px solid var(--border);}
+.search-b input{border:none;outline:none;font-size:13px;flex:1;background:transparent;}
+.t-icon{width:38px;height:38px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.tabbar{background:#fff;display:flex;border-bottom:1px solid var(--border);position:sticky;top:60px;z-index:100;}
+.tab{flex:1;padding:12px;text-align:center;font-size:13px;font-weight:800;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:.2s;}
+.tab.ab{color:var(--primary);border-bottom-color:var(--primary)}
+.tab.at{color:#f97316;border-bottom-color:#f97316}
+.banner{margin:12px;border-radius:16px;padding:18px;color:#fff;display:flex;justify-content:space-between;align-items:center;box-shadow:0 10px 25px rgba(0,0,0,.12);}
+.bb{background:linear-gradient(135deg,var(--primary),var(--primary2))}
+.bt{background:linear-gradient(135deg,#f97316,#fb923c)}
+.banner h2{font-size:18px;font-weight:900}
+.banner p{font-size:12px;opacity:.9;margin-top:4px}
+.banner-em{font-size:48px}
+.sec-hdr{padding:10px 14px;display:flex;justify-content:space-between;}
+.sec-title{font-size:14px;font-weight:900}
+.sec-cnt{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px;}
+.pcard{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.06);position:relative;}
+.pcard-ph{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:40px;background:#f3f4f6;overflow:hidden;}
+.pcard-ph img{width:100%;height:100%;object-fit:cover;}
+.pbadge{position:absolute;top:8px;left:8px;padding:4px 10px;font-size:10px;font-weight:800;border-radius:20px;color:#fff;z-index:2;}
+.bs{background:var(--primary)}.br{background:#f97316}
+.pbody{padding:10px}
+.pname{font-size:13px;font-weight:900}
+.ploc{font-size:11px;color:var(--muted)}
+.pprice{font-size:16px;font-weight:900;margin-top:4px}
+.psqft{font-size:11px;color:var(--muted)}
+.powner{font-size:11px;color:var(--primary);margin-top:2px;font-weight:700;}
+.card-btns{display:flex;gap:6px;padding:0 10px 10px;}
+.pbtn-buy{flex:1;padding:8px;border-radius:10px;font-size:11px;font-weight:800;border:none;cursor:pointer;background:var(--primary);color:#fff;font-family:'Nunito',sans-serif;}
+.pbtn-det{flex:1;padding:8px;border-radius:10px;font-size:11px;font-weight:800;border:1px solid var(--border);cursor:pointer;background:#f3f4f6;color:var(--text);font-family:'Nunito',sans-serif;}
+.fab{position:fixed;bottom:20px;right:16px;padding:12px 18px;border-radius:30px;border:none;font-weight:900;color:#fff;background:var(--primary);box-shadow:0 10px 25px rgba(37,99,235,.3);cursor:pointer;font-size:14px;z-index:300;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:flex;align-items:flex-end;justify-content:center;}
+.sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px;max-height:90vh;overflow-y:auto;}
+.sheet-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.sheet-title{font-size:16px;font-weight:900}
+.close-btn{width:32px;height:32px;border-radius:50%;border:none;background:#f3f4f6;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.img-upload-box{border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;background:#f9fafb;margin-bottom:14px;transition:.2s;position:relative;}
+.img-upload-box:hover{border-color:var(--primary);background:#eff6ff;}
+.img-upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.img-preview{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-top:10px;}
+.img-upload-icon{font-size:32px;margin-bottom:8px;}
+.img-upload-txt{font-size:12px;color:var(--muted);font-weight:700;}
+.type-row{display:flex;gap:8px;margin-bottom:16px}
+.type-btn{flex:1;padding:10px;border-radius:12px;border:2px solid var(--border);background:#fff;font-size:13px;font-weight:800;cursor:pointer;transition:.2s;font-family:'Nunito',sans-serif;}
+.type-btn.sel-buy{border-color:var(--primary);color:var(--primary);background:#eff6ff}
+.type-btn.sel-rent{border-color:#f97316;color:#f97316;background:#fff7ed}
+.field{margin-bottom:12px}
+.field label{font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px}
+.field input,.field textarea,.field select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);font-size:13px;outline:none;font-family:'Nunito',sans-serif;}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--primary)}
+.field input.err{border-color:#ef4444;}
+.err-msg{color:#ef4444;font-size:11px;margin-top:3px;display:none;}
+.submit-btn{width:100%;padding:14px;border-radius:14px;border:none;font-size:14px;font-weight:900;color:#fff;cursor:pointer;margin-top:8px;font-family:'Nunito',sans-serif;}
+.submit-buy{background:var(--primary)}.submit-rent{background:#f97316}
+.form-section-lbl{font-size:11px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px;border-top:1px solid var(--border);padding-top:12px;}
+.empty-msg{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;}
+.detail-img-ph{width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:72px;background:#f3f4f6;border-radius:12px;margin-bottom:14px;overflow:hidden;}
+.detail-img-ph img{width:100%;height:100%;object-fit:cover;}
+.det-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.det-row:last-child{border-bottom:none;}
+.det-lbl{color:var(--muted);font-weight:600;}
+.det-val{font-weight:800;color:var(--text);}
+.owner-box{background:#eff6ff;border-radius:12px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.owner-av{width:42px;height:42px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;flex-shrink:0;}
+.owner-name{font-size:14px;font-weight:900;color:var(--primary);}
+.owner-sub{font-size:11px;color:var(--muted);}
+.pay-method{border:2px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:12px;}
+.pay-method:hover{border-color:var(--primary);background:#eff6ff;}
+.pay-method.sel-pm{border-color:var(--primary);background:#eff6ff;}
+.pay-method-icon{font-size:22px;width:36px;text-align:center;}
+.pay-method-name{font-size:13px;font-weight:900;}
+.pay-method-desc{font-size:11px;color:var(--muted);}
+.pm-fields{background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:12px;}
+.pay-summary{background:#f3f4f6;border-radius:12px;padding:12px 14px;margin-bottom:14px;}
+.pay-sum-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;}
+.pay-sum-total{display:flex;justify-content:space-between;font-size:16px;font-weight:900;border-top:1px solid var(--border);padding-top:8px;margin-top:4px;}
+.pay-confirm-btn{width:100%;padding:14px;border-radius:14px;border:none;font-size:14px;font-weight:900;color:#fff;background:var(--green);cursor:pointer;font-family:'Nunito',sans-serif;}
+.success-wrap{text-align:center;padding:24px 10px;}
+.success-icon{width:72px;height:72px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 14px;}
+.success-title{font-size:20px;font-weight:900;color:var(--green);margin-bottom:6px;}
+.success-sub{font-size:13px;color:var(--muted);line-height:1.6;}
+.success-txn{font-size:11px;color:var(--primary);margin-top:10px;font-weight:700;}
+.success-close-btn{margin-top:18px;width:100%;padding:13px;border-radius:14px;border:none;font-size:14px;font-weight:900;color:#fff;background:var(--primary);cursor:pointer;font-family:'Nunito',sans-serif;}
+.buyer-summary{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:12px 14px;margin-bottom:14px;}
+.buyer-sum-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;}
+.buyer-sum-name{font-size:14px;font-weight:900;color:#166534;margin-bottom:6px;}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo-t">🏠 PropMart</div>
+  <div class="search-b">
+    <span style="font-size:14px">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search properties…" oninput="doSearch(this.value)"/>
+  </div>
+  <div class="t-icon">🔔</div>
+</div>
+
+<div class="tabbar">
+  <div class="tab ab" id="tabBuy" onclick="switchTab('buyer')">🏡 Buy</div>
+  <div class="tab" id="tabRent" onclick="switchTab('tenant')">🔑 Rent</div>
+</div>
+
+<!-- BUY SECTION -->
+<div id="secB">
+  <div class="banner bb">
+    <div><h2>Find Your Dream<br>Home to Buy</h2><p>Properties listed for sale near you</p></div>
+    <div class="banner-em">🏡</div>
+  </div>
+  <div class="sec-hdr">
+    <div class="sec-title">Properties for Sale</div>
+    <div class="sec-cnt">{{ buyer_listings|length }} listing{{ buyer_listings|length|pluralize }}</div>
+  </div>
+
+  <div class="grid" id="gridB">
+    {% for p in buyer_listings %}
+    <div class="pcard">
+      <span class="pbadge bs">Sale</span>
+      <div class="pcard-ph">
+        {% if p.house_photo %}
+          <img src="{{ p.house_photo.url }}" alt="{{ p.house_name }}"/>
+        {% else %}
+          <span style="font-size:40px">🏠</span>
+        {% endif %}
+      </div>
+      <div class="pbody">
+        <div class="pname">{{ p.house_name }}</div>
+        <div class="ploc">{{ p.location }}</div>
+        <div class="pprice">&#8377;{{ p.price|floatformat:0 }}</div>
+        <div class="psqft">{{ p.sqft }} sq.ft</div>
+        <div class="powner">&#128100; {{ p.owner_name }}</div>
+      </div>
+      <div class="card-btns">
+        <button class="pbtn-buy"
+          data-mode="sale"
+          data-name="{{ p.house_name|escapejs }}"
+          data-price="{{ p.price }}"
+          data-owner="{{ p.owner_name|escapejs }}"
+          data-loc="{{ p.location|escapejs }}"
+          data-addr="{{ p.address|escapejs }}"
+          data-sqft="{{ p.sqft }}"
+          data-desc="{{ p.description|escapejs }}"
+          data-img="{{ p.house_photo.url|default:'' }}"
+          onclick="openUserInfoDjango(this)">
+          &#128179; Buy Now
+        </button>
+        <button class="pbtn-det"
+          data-mode="sale"
+          data-name="{{ p.house_name|escapejs }}"
+          data-price="{{ p.price }}"
+          data-owner="{{ p.owner_name|escapejs }}"
+          data-loc="{{ p.location|escapejs }}"
+          data-addr="{{ p.address|escapejs }}"
+          data-sqft="{{ p.sqft }}"
+          data-desc="{{ p.description|escapejs }}"
+          data-img="{{ p.house_photo.url|default:'' }}"
+          onclick="openDetailDjango(this)">
+          Details
+        </button>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-msg" style="grid-column:1/-1">No listings yet.<br>Tap + Add Listing to get started!</div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- RENT SECTION -->
+<div id="secT" style="display:none">
+  <div class="banner bt">
+    <div><h2>Find a Perfect<br>Rental Home</h2><p>Affordable rentals near you</p></div>
+    <div class="banner-em">🔑</div>
+  </div>
+  <div class="sec-hdr">
+    <div class="sec-title">Properties for Rent</div>
+    <div class="sec-cnt">{{ tenant_listings|length }} listing{{ tenant_listings|length|pluralize }}</div>
+  </div>
+
+  <div class="grid" id="gridT">
+    {% for p in tenant_listings %}
+    <div class="pcard">
+      <span class="pbadge br">Rent</span>
+      <div class="pcard-ph">
+        {% if p.house_photo %}
+          <img src="{{ p.house_photo.url }}" alt="{{ p.house_name }}"/>
+        {% else %}
+          <span style="font-size:40px">🏠</span>
+        {% endif %}
+      </div>
+      <div class="pbody">
+        <div class="pname">{{ p.house_name }}</div>
+        <div class="ploc">{{ p.location }}</div>
+        <div class="pprice">&#8377;{{ p.rent_amount|floatformat:0 }}/mo</div>
+        <div class="psqft">{{ p.sqft }} sq.ft</div>
+        <div class="powner">&#128100; {{ p.owner_name }}</div>
+      </div>
+      <div class="card-btns">
+        <button class="pbtn-buy"
+          data-mode="rent"
+          data-name="{{ p.house_name|escapejs }}"
+          data-price="{{ p.rent_amount }}"
+          data-owner="{{ p.owner_name|escapejs }}"
+          data-loc="{{ p.location|escapejs }}"
+          data-addr="{{ p.address|escapejs }}"
+          data-sqft="{{ p.sqft }}"
+          data-desc="{{ p.description|escapejs }}"
+          data-img="{{ p.house_photo.url|default:'' }}"
+          onclick="openUserInfoDjango(this)">
+          &#128179; Rent Now
+        </button>
+        <button class="pbtn-det"
+          data-mode="rent"
+          data-name="{{ p.house_name|escapejs }}"
+          data-price="{{ p.rent_amount }}"
+          data-owner="{{ p.owner_name|escapejs }}"
+          data-loc="{{ p.location|escapejs }}"
+          data-addr="{{ p.address|escapejs }}"
+          data-sqft="{{ p.sqft }}"
+          data-desc="{{ p.description|escapejs }}"
+          data-img="{{ p.house_photo.url|default:'' }}"
+          onclick="openDetailDjango(this)">
+          Details
+        </button>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-msg" style="grid-column:1/-1">No listings yet.<br>Tap + Add Listing to get started!</div>
+    {% endfor %}
+  </div>
+</div>
+
+<button class="fab" onclick="openForm()">+ Add Listing</button>
+
+<!-- ADD LISTING MODAL -->
+<div class="overlay" id="modal" style="display:none" onclick="handleOvClick(event,'modal')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-hdr">
+      <div class="sheet-title">Add New Listing</div>
+      <button class="close-btn" onclick="closeModal('modal')">&#x2715;</button>
+    </div>
+    <div class="type-row">
+      <button class="type-btn sel-buy" id="btnBuy" onclick="selectType('buyer')">🏡 For Sale</button>
+      <button class="type-btn" id="btnRent" onclick="selectType('tenant')">🔑 For Rent</button>
+    </div>
+    <div class="img-upload-box" id="uploadBox" onclick="document.getElementById('houseImg').click()">
+      <input type="file" id="houseImg" accept="image/*" onchange="previewImage(event)" onclick="event.stopPropagation()"/>
+      <div id="uploadPlaceholder">
+        <div class="img-upload-icon">🏠</div>
+        <div class="img-upload-txt">Tap to upload house photo</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">JPG, PNG, WEBP supported</div>
+      </div>
+      <img id="imgPreviewEl" class="img-preview" style="display:none" alt="preview"/>
+    </div>
+    <div class="field">
+      <label>Property Name</label>
+      <input type="text" id="fName" placeholder="eg: 3BHK Apartment"/>
+      <div class="err-msg" id="fNameErr">Property name required</div>
+    </div>
+    <div class="field">
+      <label>Location</label>
+      <input type="text" id="fLoc" placeholder="eg: Anna Nagar, Chennai"/>
+      <div class="err-msg" id="fLocErr">Location required</div>
+    </div>
+    <div class="field">
+      <label id="priceLabel">Price (&#8377;)</label>
+      <input type="number" id="fPrice" placeholder="eg: 5000000"/>
+      <div class="err-msg" id="fPriceErr">Price required</div>
+    </div>
+    <div class="field">
+      <label>Area (sq.ft)</label>
+      <input type="number" id="fSqft" placeholder="eg: 1200"/>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="fDesc" rows="3" placeholder="eg: Spacious 3BHK with parking..."></textarea>
+    </div>
+    <div class="field">
+      <label>Address</label>
+      <input type="text" id="fAddr" placeholder="eg: 12, Gandhi Road"/>
+    </div>
+    <div class="field">
+      <label>Type</label>
+      <select id="fType">
+        <option>Apartment</option><option>House</option><option>Villa</option>
+        <option>Plot</option><option>Commercial</option>
+      </select>
+    </div>
+    <div class="field" id="advanceField" style="display:none">
+      <label>Advance Amount (&#8377;)</label>
+      <input type="number" id="fAdvance" placeholder="eg: 50000"/>
+    </div>
+    <div class="field" id="rulesField" style="display:none">
+      <label>Tenant Rules (comma separated)</label>
+      <textarea id="fRules" rows="2" placeholder="eg: No pets, No smoking"></textarea>
+    </div>
+    <div class="form-section-lbl">Owner Details</div>
+    <div class="field">
+      <label>Owner Name</label>
+      <input type="text" id="fOwner" placeholder="eg: Suresh Kumar"/>
+      <div class="err-msg" id="fOwnerErr">Owner name required</div>
+    </div>
+    <div class="field">
+      <label>Owner Phone</label>
+      <input type="tel" id="fPhone" placeholder="eg: +91 98765 43210"/>
+      <div class="err-msg" id="fPhoneErr">Phone number required</div>
+    </div>
+    <div class="field">
+      <label>Owner Email</label>
+      <input type="email" id="fEmail" placeholder="eg: owner@email.com"/>
+    </div>
+    <button class="submit-btn submit-buy" id="submitBtn" onclick="submitForm()">Add Property for Sale</button>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="overlay" id="detailModal" style="display:none" onclick="handleOvClick(event,'detailModal')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-hdr">
+      <div class="sheet-title" id="detTitle">Property Details</div>
+      <button class="close-btn" onclick="closeModal('detailModal')">&#x2715;</button>
+    </div>
+    <div class="detail-img-ph" id="detImg"></div>
+    <div class="owner-box">
+      <div class="owner-av" id="detOwnerAv">SK</div>
+      <div>
+        <div class="owner-name" id="detOwnerName">Owner Name</div>
+        <div class="owner-sub" id="detOwnerPhone">&#128222; &#8212;</div>
+        <div class="owner-sub" id="detOwnerEmail">&#9993;&#65039; &#8212;</div>
+      </div>
+    </div>
+    <div id="detRows"></div>
+    <button class="submit-btn submit-buy" id="detBuyBtn" style="margin-top:14px" onclick="openUserInfoFromDetail()">&#128179; Proceed to Payment</button>
+  </div>
+</div>
+
+<!-- USER INFO MODAL -->
+<div class="overlay" id="userInfoModal" style="display:none" onclick="handleOvClick(event,'userInfoModal')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-hdr">
+      <div class="sheet-title">Your Details</div>
+      <button class="close-btn" onclick="closeModal('userInfoModal')">&#x2715;</button>
+    </div>
+    <div class="field">
+      <label>Your Full Name *</label>
+      <input type="text" id="bName" placeholder="eg: Ramesh Kumar"/>
+      <div class="err-msg" id="bNameErr">Full name required</div>
+    </div>
+    <div class="field">
+      <label>Phone Number *</label>
+      <input type="tel" id="bPhone" placeholder="eg: +91 98765 43210"/>
+      <div class="err-msg" id="bPhoneErr">Phone number required</div>
+    </div>
+    <div class="field">
+      <label>Email Address *</label>
+      <input type="email" id="bEmail" placeholder="eg: you@email.com"/>
+      <div class="err-msg" id="bEmailErr">Valid email required</div>
+    </div>
+    <div class="field">
+      <label>Address</label>
+      <input type="text" id="bAddr" placeholder="eg: 12, Gandhi Road, Chennai"/>
+    </div>
+    <div class="field">
+      <label>Aadhar / PAN Number (Optional)</label>
+      <input type="text" id="bId" placeholder="For verification purposes"/>
+    </div>
+    <button class="submit-btn submit-buy" onclick="goToPayment()">Continue to Payment &#8594;</button>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="overlay" id="payModal" style="display:none" onclick="handleOvClick(event,'payModal')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-hdr">
+      <div class="sheet-title">Payment</div>
+      <button class="close-btn" onclick="closeModal('payModal')">&#x2715;</button>
+    </div>
+    <div class="buyer-summary">
+      <div class="buyer-sum-name" id="pBuyerName">Buyer Name</div>
+      <div class="buyer-sum-row"><span style="color:var(--muted)">&#128222;</span><span id="pBuyerPhone">&#8212;</span></div>
+      <div class="buyer-sum-row"><span style="color:var(--muted)">&#9993;&#65039;</span><span id="pBuyerEmail">&#8212;</span></div>
+    </div>
+    <div class="pay-summary">
+      <div class="pay-sum-row"><span style="color:var(--muted)">Property</span><span id="pSumName" style="font-weight:700">&#8212;</span></div>
+      <div class="pay-sum-row"><span style="color:var(--muted)">Type</span><span id="pSumType" style="font-weight:700">&#8212;</span></div>
+      <div class="pay-sum-total"><span>Total</span><span id="pSumAmt" style="color:var(--primary)">&#8377;0</span></div>
+    </div>
+    <div style="font-size:12px;font-weight:900;color:var(--muted);margin-bottom:8px;">SELECT PAYMENT METHOD</div>
+    <div class="pay-method sel-pm" id="pm-upi" onclick="selectPM('upi')">
+      <div class="pay-method-icon">&#128241;</div>
+      <div><div class="pay-method-name">UPI</div><div class="pay-method-desc">Google Pay · PhonePe · Paytm</div></div>
+    </div>
+    <div class="pay-method" id="pm-card" onclick="selectPM('card')">
+      <div class="pay-method-icon">&#128179;</div>
+      <div><div class="pay-method-name">Debit / Credit Card</div><div class="pay-method-desc">Visa · Mastercard · RuPay</div></div>
+    </div>
+    <div class="pay-method" id="pm-net" onclick="selectPM('net')">
+      <div class="pay-method-icon">&#127974;</div>
+      <div><div class="pay-method-name">Net Banking</div><div class="pay-method-desc">All major Indian banks</div></div>
+    </div>
+    <div class="pay-method" id="pm-emi" onclick="selectPM('emi')">
+      <div class="pay-method-icon">&#128197;</div>
+      <div><div class="pay-method-name">EMI</div><div class="pay-method-desc">0% interest · 12&#8211;36 months</div></div>
+    </div>
+    <div class="pm-fields" id="fields-upi">
+      <div class="field"><label>UPI ID</label><input id="upiId" placeholder="name@upi"/><div class="err-msg" id="upiIdErr">Valid UPI ID required (eg: name@upi)</div></div>
+    </div>
+    <div class="pm-fields" id="fields-card" style="display:none">
+      <div class="field"><label>Card Number</label><input id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)"/><div class="err-msg" id="cardNumErr">Enter valid 16-digit card number</div></div>
+      <div style="display:flex;gap:8px">
+        <div class="field" style="flex:1"><label>Expiry (MM/YY)</label><input id="cardExp" placeholder="MM/YY" maxlength="5" oninput="fmtExp(this)"/><div class="err-msg" id="cardExpErr">Valid expiry required</div></div>
+        <div class="field" style="flex:1"><label>CVV</label><input id="cardCvv" placeholder="CVV" maxlength="3" type="password"/><div class="err-msg" id="cardCvvErr">3-digit CVV required</div></div>
+      </div>
+      <div class="field"><label>Name on Card</label><input id="cardName" placeholder="Full name"/><div class="err-msg" id="cardNameErr">Name required</div></div>
+    </div>
+    <div class="pm-fields" id="fields-net" style="display:none">
+      <div class="field"><label>Select Bank</label>
+        <select id="netBank"><option value="">-- Select Bank --</option><option>SBI</option><option>HDFC</option><option>ICICI</option><option>Axis</option><option>Kotak</option><option>Bank of Baroda</option><option>Canara Bank</option></select>
+        <div class="err-msg" id="netBankErr">Select a bank</div>
+      </div>
+      <div class="field"><label>User ID</label><input id="netUid" placeholder="Net banking user ID"/><div class="err-msg" id="netUidErr">User ID required</div></div>
+      <div class="field"><label>Password</label><input id="netPwd" type="password" placeholder="Password"/><div class="err-msg" id="netPwdErr">Password required</div></div>
+    </div>
+    <div class="pm-fields" id="fields-emi" style="display:none">
+      <div class="field"><label>Card Number</label><input id="emiCard" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)"/><div class="err-msg" id="emiCardErr">Enter valid 16-digit card number</div></div>
+      <div class="field"><label>EMI Tenure</label>
+        <select id="emiTenure"><option value="">-- Select Tenure --</option><option>12 months</option><option>24 months</option><option>36 months</option></select>
+        <div class="err-msg" id="emiTenureErr">Select EMI tenure</div>
+      </div>
+    </div>
+    <button class="pay-confirm-btn" onclick="confirmPayment()">&#9989; Confirm Payment</button>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="overlay" id="successModal" style="display:none">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="success-wrap">
+      <div class="success-icon">&#9989;</div>
+      <div class="success-title">Payment Successful!</div>
+      <div class="success-sub" id="successMsg">Your payment has been processed.</div>
+      <div class="success-txn" id="successTxn"></div>
+      <button class="success-close-btn" onclick="closeAllAndHome()">Back to Listings</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var currentTab = 'buyer';
+var formType   = 'buyer';
+var activeProp = null;
+var selectedPM = 'upi';
+var buyerInfo  = {};
+var uploadedImageData = null;
+
+/* ── CSRF ── */
+function getCookie(name){
+  var v=null;
+  if(document.cookie&&document.cookie!==''){
+    document.cookie.split(';').forEach(function(c){
+      c=c.trim();
+      if(c.substring(0,name.length+1)===(name+'=')){
+        v=decodeURIComponent(c.substring(name.length+1));
+      }
+    });
+  }
+  return v;
+}
+
+/* ── Tab ── */
+function switchTab(tab){
+  currentTab=tab;
+  document.getElementById('secB').style.display=tab==='buyer'?'':'none';
+  document.getElementById('secT').style.display=tab==='tenant'?'':'none';
+  document.getElementById('tabBuy').className='tab '+(tab==='buyer'?'ab':'');
+  document.getElementById('tabRent').className='tab '+(tab==='tenant'?'at':'');
+}
+
+/* ── Overlay helpers ── */
+function handleOvClick(e,id){if(e.target===document.getElementById(id))closeModal(id);}
+function openModal(id){document.getElementById(id).style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
+function closeAllAndHome(){
+  ['modal','detailModal','userInfoModal','payModal','successModal'].forEach(function(id){closeModal(id);});
+}
+
+/* ── Image Preview ── */
+function previewImage(event){
+  var file=event.target.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    uploadedImageData=e.target.result;
+    document.getElementById('uploadPlaceholder').style.display='none';
+    var prev=document.getElementById('imgPreviewEl');
+    prev.src=uploadedImageData;
+    prev.style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ── Django data-attribute helpers ── */
+function openUserInfoDjango(btn){
+  activeProp={
+    p:{
+      name:  btn.dataset.name,
+      price: btn.dataset.price,
+      owner: btn.dataset.owner,
+      loc:   btn.dataset.loc,
+      addr:  btn.dataset.addr,
+      sqft:  btn.dataset.sqft,
+      desc:  btn.dataset.desc,
+      img:   btn.dataset.img,
+      email: '—', phone: '—'
+    },
+    mode: btn.dataset.mode,
+    card: btn.closest('.pcard')  /* ✅ FIX: அந்த card element-ஐ save பண்றோம் */
+  };
+  openUserInfoModal();
+}
+
+function openDetailDjango(btn){
+  var mode  = btn.dataset.mode;
+  var name  = btn.dataset.name;
+  var price = btn.dataset.price;
+  var owner = btn.dataset.owner;
+  var loc   = btn.dataset.loc;
+  var addr  = btn.dataset.addr;
+  var sqft  = btn.dataset.sqft;
+  var desc  = btn.dataset.desc;
+  var img   = btn.dataset.img;
+
+  activeProp={
+    p:{ name:name, price:price, owner:owner, loc:loc, addr:addr, sqft:sqft, desc:desc, img:img, email:'—', phone:'—' },
+    mode: mode,
+    card: btn.closest('.pcard')  /* ✅ FIX: Detail-லிருந்தும் card save பண்றோம் */
+  };
+
+  document.getElementById('detTitle').textContent = name;
+
+  var detImg = document.getElementById('detImg');
+  if(img){
+    detImg.innerHTML='<img src="'+img+'" alt="'+name+'" style="width:100%;height:100%;object-fit:cover;"/>';
+  } else {
+    detImg.innerHTML='<span style="font-size:72px">🏠</span>';
+  }
+
+  var init = owner.substring(0,2).toUpperCase();
+  document.getElementById('detOwnerAv').textContent    = init;
+  document.getElementById('detOwnerName').textContent  = owner;
+  document.getElementById('detOwnerPhone').textContent = '📞 —';
+  document.getElementById('detOwnerEmail').textContent = '✉️ —';
+
+  var priceStr = mode==='rent'
+    ? '₹'+Number(price).toLocaleString('en-IN')+'/mo'
+    : '₹'+Number(price).toLocaleString('en-IN');
+
+  document.getElementById('detRows').innerHTML =
+    '<div class="det-row"><span class="det-lbl">Price</span><span class="det-val">'+priceStr+'</span></div>'
+    +'<div class="det-row"><span class="det-lbl">Area</span><span class="det-val">'+(sqft?sqft+' sq.ft':'—')+'</span></div>'
+    +'<div class="det-row"><span class="det-lbl">Location</span><span class="det-val">'+loc+'</span></div>'
+    +'<div class="det-row"><span class="det-lbl">Address</span><span class="det-val">'+(addr||'—')+'</span></div>'
+    +'<div class="det-row"><span class="det-lbl">Listing</span><span class="det-val">'+(mode==='sale'?'For Sale':'For Rent')+'</span></div>'
+    +'<div class="det-row" style="border-bottom:none"><span class="det-lbl">Description</span></div>'
+    +'<div style="font-size:12px;color:var(--text);padding:6px 0;line-height:1.6;">'+(desc||'—')+'</div>';
+
+  document.getElementById('detBuyBtn').textContent  = mode==='rent'?'💳 Proceed to Rent Payment':'💳 Proceed to Buy Payment';
+  document.getElementById('detBuyBtn').className    = 'submit-btn '+(mode==='sale'?'submit-buy':'submit-rent');
+  openModal('detailModal');
+}
+
+function openUserInfoFromDetail(){ closeModal('detailModal'); openUserInfoModal(); }
+
+/* ── Add Listing Form ── */
+function openForm(){
+  uploadedImageData=null;
+  document.getElementById('uploadPlaceholder').style.display='block';
+  document.getElementById('imgPreviewEl').style.display='none';
+  document.getElementById('imgPreviewEl').src='';
+  document.getElementById('houseImg').value='';
+  openModal('modal');
+  selectType(currentTab==='buyer'?'buyer':'tenant');
+}
+
+function selectType(type){
+  formType=type;
+  var isBuy=type==='buyer';
+  document.getElementById('btnBuy').className='type-btn '+(isBuy?'sel-buy':'');
+  document.getElementById('btnRent').className='type-btn '+(!isBuy?'sel-rent':'');
+  document.getElementById('priceLabel').textContent=isBuy?'Price (₹)':'Rent per Month (₹)';
+  document.getElementById('submitBtn').textContent=isBuy?'Add Property for Sale':'Add Property for Rent';
+  document.getElementById('submitBtn').className='submit-btn '+(isBuy?'submit-buy':'submit-rent');
+  document.getElementById('advanceField').style.display=isBuy?'none':'block';
+  document.getElementById('rulesField').style.display=isBuy?'none':'block';
+}
+
+function submitForm(){
+  var ok=true;
+  var name  = document.getElementById('fName').value.trim();
+  var loc   = document.getElementById('fLoc').value.trim();
+  var price = document.getElementById('fPrice').value.trim();
+  var sqft  = document.getElementById('fSqft').value.trim();
+  var desc  = document.getElementById('fDesc').value.trim();
+  var addr  = document.getElementById('fAddr').value.trim();
+  var type  = document.getElementById('fType').value;
+  var owner = document.getElementById('fOwner').value.trim();
+  var phone = document.getElementById('fPhone').value.trim();
+  var email = document.getElementById('fEmail').value.trim();
+  var advance = document.getElementById('fAdvance').value.trim();
+  var rules   = document.getElementById('fRules').value.trim();
+
+  ['fName','fLoc','fPrice','fOwner','fPhone'].forEach(function(id){
+    document.getElementById(id).classList.remove('err');
+  });
+  ['fNameErr','fLocErr','fPriceErr','fOwnerErr','fPhoneErr'].forEach(function(id){
+    document.getElementById(id).style.display='none';
+  });
+
+  if(!name){document.getElementById('fName').classList.add('err');document.getElementById('fNameErr').style.display='block';ok=false;}
+  if(!loc){document.getElementById('fLoc').classList.add('err');document.getElementById('fLocErr').style.display='block';ok=false;}
+  if(!price){document.getElementById('fPrice').classList.add('err');document.getElementById('fPriceErr').style.display='block';ok=false;}
+  if(!owner){document.getElementById('fOwner').classList.add('err');document.getElementById('fOwnerErr').style.display='block';ok=false;}
+  if(!phone){document.getElementById('fPhone').classList.add('err');document.getElementById('fPhoneErr').style.display='block';ok=false;}
+  if(!ok)return;
+
+  var fd = new FormData();
+  fd.append('house_name',  name);
+  fd.append('location',    loc);
+  fd.append('address',     addr);
+  fd.append('sqft',        sqft||0);
+  fd.append('description', desc);
+  fd.append('owner_name',  owner);
+
+  var imgFile = document.getElementById('houseImg').files[0];
+  if(imgFile) fd.append('house_photo', imgFile);
+
+  if(formType==='buyer'){
+    fd.append('price',        price);
+    fd.append('buyer_submit', '1');
+  } else {
+    fd.append('rent_amount',    price);
+    fd.append('advance_amount', advance||0);
+    fd.append('tenant_rules',   rules);
+    fd.append('tenant_submit',  '1');
+  }
+
+  fd.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+  fetch('/sell/', { method:'POST', body: fd })
+  .then(function(res){
+    if(res.ok || res.redirected){
+      closeModal('modal');
+      window.location.reload();
+    } else {
+      res.text().then(t => console.log('Response:', t));
+    }
+  })
+  .catch(function(err){ 
+    console.error('Fetch error:', err);
+  });
+}
+
+function openUserInfoModal(){
+  ['bName','bPhone','bEmail','bAddr','bId'].forEach(function(id){document.getElementById(id).value='';});
+  ['bNameErr','bPhoneErr','bEmailErr'].forEach(function(id){document.getElementById(id).style.display='none';});
+  ['bName','bPhone','bEmail'].forEach(function(id){document.getElementById(id).classList.remove('err');});
+  openModal('userInfoModal');
+}
+
+function goToPayment(){
+  var name  = document.getElementById('bName').value.trim();
+  var phone = document.getElementById('bPhone').value.trim();
+  var email = document.getElementById('bEmail').value.trim();
+  var ok=true;
+  if(!name){document.getElementById('bName').classList.add('err');document.getElementById('bNameErr').style.display='block';ok=false;}
+  if(!phone){document.getElementById('bPhone').classList.add('err');document.getElementById('bPhoneErr').style.display='block';ok=false;}
+  if(!email||!email.includes('@')){document.getElementById('bEmail').classList.add('err');document.getElementById('bEmailErr').style.display='block';ok=false;}
+  if(!ok)return;
+  buyerInfo={
+    name:name, phone:phone, email:email,
+    address: document.getElementById('bAddr').value.trim(),
+    idNum:   document.getElementById('bId').value.trim()
+  };
+  closeModal('userInfoModal');
+  openPayModal(activeProp.p, activeProp.mode);
+}
+
+/* ── Payment Modal ── */
+function openPayModal(p, mode){
+  var priceStr = mode==='rent'
+    ? '₹'+Number(p.price).toLocaleString('en-IN')+'/mo'
+    : '₹'+Number(p.price).toLocaleString('en-IN');
+  document.getElementById('pSumName').textContent  = p.name;
+  document.getElementById('pSumType').textContent  = mode==='sale'?'Purchase':'Rent';
+  document.getElementById('pSumAmt').textContent   = priceStr;
+  document.getElementById('pBuyerName').textContent  = buyerInfo.name;
+  document.getElementById('pBuyerPhone').textContent = buyerInfo.phone;
+  document.getElementById('pBuyerEmail').textContent = buyerInfo.email;
+  selectPM('upi');
+  openModal('payModal');
+}
+
+function selectPM(pm){
+  selectedPM=pm;
+  ['upi','card','net','emi'].forEach(function(m){
+    document.getElementById('pm-'+m).className='pay-method'+(m===pm?' sel-pm':'');
+    document.getElementById('fields-'+m).style.display=m===pm?'block':'none';
+  });
+}
+
+function fmtCard(el){var v=el.value.replace(/\D/g,'').substring(0,16);el.value=v.replace(/(.{4})/g,'$1 ').trim();}
+function fmtExp(el){var v=el.value.replace(/\D/g,'');if(v.length>=2)v=v.substring(0,2)+'/'+v.substring(2,4);el.value=v;}
+
+function confirmPayment(){
+  if(selectedPM==='upi'){
+    var uid=document.getElementById('upiId').value.trim();
+    if(!uid||!uid.includes('@')){
+      document.getElementById('upiId').classList.add('err');
+      document.getElementById('upiIdErr').style.display='block';
+      return;
+    }
+  }
+
+  var p    = activeProp.p;
+  var mode = activeProp.mode;
+  var txnId= 'TXN'+Date.now();
+  var priceStr = mode==='rent'
+    ? '₹'+Number(p.price).toLocaleString('en-IN')+'/mo'
+    : '₹'+Number(p.price).toLocaleString('en-IN');
+
+  var txn={
+    id: txnId,
+    user:      buyerInfo.name,
+    userPhone: buyerInfo.phone,
+    userEmail: buyerInfo.email,
+    property:  p.name,
+    propertyLoc: p.loc,
+    amount:    Number(p.price),
+    method:    selectedPM.toUpperCase(),
+    transaction_type: mode==='sale'?'buy':'rent',
+    transaction_date: new Date().toISOString(),
+    status: 'completed'
+  };
+
+  fetch('/api/transaction/', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify(txn)
+  }).catch(function(e){ console.error(e); });
+
+  /* ✅ FIX: Payment success ஆனதும் property card-ஐ page-லிருந்து remove பண்ணு */
+  if(activeProp.card){
+    activeProp.card.remove();
+  }
+
+  closeModal('payModal');
+  document.getElementById('successMsg').innerHTML=
+    '<b>'+buyerInfo.name+'</b> paid <b>'+priceStr+'</b><br>for <b>'+p.name+'</b> successfully 🎉';
+  document.getElementById('successTxn').textContent='Transaction ID: '+txnId;
+  openModal('successModal');
+}
+
+/* ── Search ── */
+function doSearch(val){
+  var q=val.toLowerCase();
+  var cards=document.querySelectorAll(currentTab==='buyer'?'#gridB .pcard':'#gridT .pcard');
+  cards.forEach(function(card){
+    var name=card.querySelector('.pname').textContent.toLowerCase();
+    var loc=card.querySelector('.ploc').textContent.toLowerCase();
+    card.style.display=(name.includes(q)||loc.includes(q))?'':'none';
+  });
+}
+</script>
+</body>
+</html>
